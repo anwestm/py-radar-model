@@ -1,39 +1,50 @@
 from mpmath import linspace
 
-import signal_generation.nco
+#import signal_generation.nco
+import signal_generation.pulse_generator
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 def main():
-    Fs = 1e5
-    nco = signal_generation.nco.NCO(f_s=Fs, waveform_amplitude_bits=14, accumulator_bits=12, waveform_length_bits=12, phase_offset=0)
+
     #nco.plot_sin_lookup_table()
 
-    nco.configure_nco(amplitude=30, freq=8000)
+    Fs = 1e5
+    ptg = signal_generation.pulse_generator.PulseGenerator(Fs)
 
     x = []
-    amplitude = 0
-    for i in range(3000):
-        amplitude = 200+100*np.sin((i/1000)*2*np.pi)
-        nco.configure_nco(amplitude=amplitude, freq=8000)
-        x.append(nco.get_sample())
-        #x.append(nco.get_sample())
-        nco.tick()
+    amplitude = 30
+    freq = 8000
+
+    ptg.start_pulse_train(8000, amplitude, 0.01, 20)
+    for i in range(50000):
+        x.append(ptg.sample())
+        ptg.tick()
 
 
-    fig = plt.figure(figsize=(10, 7))
-    axs = fig.subplot_mosaic([["Signal", "Signal"], ["Phase", "Magnitude Log"]])
+    fig = plt.figure(figsize=(10, 14))
+    axs = fig.subplot_mosaic([["Signal", "Signal"], ["Re{Signal}", "Im{Signal}"], ["Phase", "Magnitude Log"]])
     axs["Signal"].set_title("Signal")
     axs["Signal"].set_xlabel("Time (s)")
     axs["Signal"].set_ylabel("Amplitude")
     axs["Signal"].plot(np.arange(0, len(x) / Fs, 1 / Fs), x, color="C0")
 
+    axs["Re{Signal}"].set_title("Re{Signal}")
+    axs["Re{Signal}"].set_xlabel("Time (s)")
+    axs["Re{Signal}"].set_ylabel("Amplitude")
+    axs["Re{Signal}"].plot(np.arange(0, len(x) / Fs, 1 / Fs), np.real(x), color="C1")
+
+    axs["Im{Signal}"].set_title("Im{Signal}")
+    axs["Im{Signal}"].set_xlabel("Time (s)")
+    axs["Im{Signal}"].set_ylabel("Amplitude")
+    axs["Im{Signal}"].plot(np.arange(0, len(x) / Fs, 1 / Fs), np.imag(x), color="C2")
+
     axs["Phase"].set_title("Phase Spectrum")
-    axs["Phase"].phase_spectrum(x, Fs=Fs, color="C1")
+    axs["Phase"].phase_spectrum(x, Fs=Fs, color="C3")
 
     axs["Magnitude Log"].set_title("Magnitude Spectrum")
-    axs["Magnitude Log"].magnitude_spectrum(x, Fs=Fs, scale='dB', color="C2")
+    axs["Magnitude Log"].magnitude_spectrum(x, Fs=Fs, scale='dB', color="C4")
 
    # dt = 1 / Fs
     #f = np.arange(0, len(x), dt)

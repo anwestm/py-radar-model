@@ -48,7 +48,6 @@ class NCO:
 
         # Normalize and rescale amplitude
         return self.__amplitude * (self.sin_lookup_table[lut_index] / self.__bit_to_max_signed_ampl(self.__M))
-        #return self.sin_lookup_table[lut_index]
 
     def tick(self):
         self.__phase_accumulator += self.__fcw
