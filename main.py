@@ -14,11 +14,11 @@ def main():
     ptg = signal_generation.pulse_generator.PulseGenerator(Fs)
 
     x = []
-    amplitude = 30
+    amplitude = 2
     freq = 8000
 
     ptg.start_pulse_train(8000, amplitude, 0.01, 20)
-    for i in range(50000):
+    for i in range(50):
         x.append(ptg.sample())
         ptg.tick()
 

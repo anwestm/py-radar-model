@@ -34,15 +34,17 @@ class PulseGenerator:
         pri = 1 / self.__pulse_prf
 
         sample = 0 + 1j * 0
-        if self.__pulse_time_acc <= self.__pulse_pw:
+        if self.inside_pulse_window():
             sample = self.__nco_i.get_sample() + 1j * self.__nco_q.get_sample()
 
         self.__pulse_time_acc += clk_dt
         if self.__pulse_time_acc >= pri:
             self.__pulse_time_acc = 0
 
-
         return sample
+
+    def inside_pulse_window(self):
+        return self.__pulse_time_acc < self.__pulse_pw
 
     def tick(self):
         self.__nco_i.tick()
