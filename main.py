@@ -19,12 +19,13 @@ def main():
 
 
     x = []
-    amplitude = 2
-    freq = 8000
+    amplitude = 20
+    freq = 1000
 
-    ptg.start_chirped_pulse_train(freq, amplitude, 0.01, 50, 4000)
+    ptg.start_chirped_pulse_train(freq, amplitude, 0.01, 50, 2000)
     for i in range(10000):
         sample = ptg.sample()
+        #sample += (np.random.rand()-0.5 + 1j * (np.random.rand()-0.5)) * 10
         x.append(sample)
         pm.handle_sample(sample, ptg.inside_pulse_window())
         ptg.tick()
