@@ -8,14 +8,13 @@ class PulseMemory:
         self.buffer = np.zeros(0)
         pass
 
-    def save_sample(self, pulse_active):
+    def handle_sample(self, sample, pulse_active):
         if pulse_active:
-            self.buffer = np.append(self.buffer, self.latest_pulse)
+            self.buffer = np.append(self.buffer, sample)
         else:
             if len(self.buffer) > 0:
                 self.latest_pulse = self.buffer
-                self.buffer = np.zeros()
-        self.latest_pulse.app = pulse_active
+                self.buffer = np.zeros(0)
 
 
     def save_recorded_pulse(self, data):
